@@ -74,3 +74,7 @@ h() {
 	python3 ~/bin/help/help.py
 }
 
+sync_config() {
+        python3 ~/bin/sync_config/sync.py
+}
+
