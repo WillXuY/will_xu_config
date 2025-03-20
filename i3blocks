@@ -1,0 +1,36 @@
+# CPU 使用情况 (fa-microchip)
+[CPU]
+command=awk '{print " 🖥️ " $1"%"}' /proc/loadavg
+interval=5
+separator=true
+separator_block_width=20
+
+# 内存使用情况 (fa-floppy-disk)
+[Memory]
+command=free -h | awk '/Mem:/ {print "💾 "$3 "/" $2}'
+interval=10
+separator=true
+separator_block_width=20
+
+# WiFi 状态 (fa-wifi)
+[WiFi]
+command=sh -c 'SSID=$(nmcli -t -f active,ssid dev wifi | awk -F: "/^yes/ {print \$2}"); SIGNAL=$(nmcli -t -f IN-USE,SIGNAL dev wifi | awk -F: "/^\*/ {print \$2}"); [ -z "$SSID" ] && echo "🛜 [Offline]" || echo "🛜 $SSID (${SIGNAL}%)"'
+interval=5
+separator=true
+separator_block_width=20
+
+# 电池状态 (fa-battery-half / fa-plug)
+[Battery]
+# command=sh -c 'STATUS=$(cat /sys/class/power_supply/BAT0/status); BAT=$(cat /sys/class/power_supply/BAT0/capacity); if [ "$STATUS" = "Charging" ]; then echo "🔌 $BAT%"; elif [ "$STATUS" = "Not charging" ]; then echo "🔋 $BAT%"; elif [ "$STATUS" = "Discharging" ]; then echo "🔋 $BAT%"; else echo "❓ $BAT%"; fi'
+command=sh -c 'STATUS=$(cat /sys/class/power_supply/BAT0/status); BAT=$(cat /sys/class/power_supply/BAT0/capacity); if [ "$STATUS" = "Charging" ]; then echo "⚡ $BAT%"; elif [ "$STATUS" = "Not charging" ]; then echo "🔋 $BAT%"; elif [ "$STATUS" = "Discharging" ]; then echo "🪫 $BAT%"; else echo "❓ $BAT%"; fi'
+interval=30
+separator=true
+separator_block_width=20
+
+# 当前时间 (fa-clock) ⏱  ⏲  ⏰ 🕒
+[Time]
+command=date '+🕒 %Y-%m-%d %H:%M:%S'
+interval=1
+separator=true
+separator_block_width=20
+
