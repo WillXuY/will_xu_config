@@ -70,6 +70,10 @@ fi
 alias ls='ls --color=auto'
 
 # 自定义快捷命令
+download_apt() {
+	python3 ~/bin/download_apt/download_apt.py
+}
+
 h() {
 	python3 ~/bin/help/help.py
 }
