@@ -80,5 +80,6 @@ h() {
 
 sync_config() {
         python3 ~/bin/sync_config/sync.py
+	bash ~/bin/sync_config/git_commit_and_push.sh
 }
 
