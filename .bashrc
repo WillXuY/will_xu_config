@@ -62,9 +62,10 @@ fi
 # export PATH="$HOME/bin:$PATH"
 
 # 添加 fcitx5 环境变量
-# export GTK_IM_MODULE=fcitx
-# export QT_IM_MODULE=fcitx
-# export XMODIFIERS="@im=fcitx"
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+export INPUT_METHOD=fcitx
 
 # ls 设置别名提供颜色
 alias ls='ls --color=auto'
