@@ -47,10 +47,9 @@ include /etc/sway/config-vars.d/*
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
-exec swayidle -w \
+exec_always swayidle -w \
          timeout 600 'swaylock -f -c 000000' \
          timeout 900 'systemctl suspend' \
-         timeout 3600 'systemctl hybrid-sleep' \
          before-sleep 'swaylock -f -c 000000'
 
 ### Input configuration
