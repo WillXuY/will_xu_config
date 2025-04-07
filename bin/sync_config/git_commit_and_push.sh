@@ -20,7 +20,8 @@ git add .
 git commit -m "$commit_message"
 
 # 推送到远程仓库
-git push origin main || { echo "推送失败，请检查网络连接或远程仓库设置"; exit 1; }
+git push gitlab main || { echo "推送 gitlab 失败，请检查网络连接或远程仓库设置"; exit 1; }
+git push origin main || { echo "推送 github 失败，请检查网络连接或远程仓库设置"; exit 1; }
 
 echo "提交并推送完成"
 
