@@ -240,8 +240,8 @@ bindsym $mod+p exec --no-startup-id ~/bin/autoswitch_display.sh
 bindsym $mod+m exec killall -SIGUSR1 waybar
 
 bindsym $mod+Alt+c exec --no-startup-id chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
-bindsym $mod+Alt+e exec --no-startup-id ~/software/eclipse/eclipse
 bindsym $mod+Alt+f exec --no-startup-id firefox
+bindsym $mod+Alt+i exec --no-startup-id ~/software/idea-IC-243.26053.27/bin/idea
 
 ### run flatpak software
 bindsym $mod+Alt+d exec --no-startup-id flatpak run io.dbeaver.DBeaverCommunity

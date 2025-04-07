@@ -67,6 +67,8 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 export INPUT_METHOD=fcitx
 
+export TERM=xterm-256color
+
 # ls 设置别名提供颜色
 alias ls='ls --color=auto'
 

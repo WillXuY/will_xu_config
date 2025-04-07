@@ -16,17 +16,11 @@
   ;; 启用 Evil 模式
   (evil-mode 1))
 
-;; 设置 org 代码块的颜色
-;; (custom-set-faces
-;;  ;; 代码块主体
-;;  '(org-block
-;;    ((t (:background "#eaf5d5" :foreground "#586e75" :extend t))))
-;;  ;; 代码块开始行
-;;  '(org-block-begin-line
-;;    ((t (:background "#f0e68c" :foreground "#657b83" :italic t))))
-;;  ;; 代码块结束行
-;;  '(org-block-end-line
-;;    ((t (:background "#f0e68c" :foreground "#657b83" :italic t)))))
+;; theme
+(use-package catppuccin-theme
+  :ensure t)
+(setq catppuccin-flavor 'macchiato)
+(catppuccin-reload)
 
 ;;;; font & size ;;;;
 ;; use cnfonts
@@ -35,9 +29,14 @@
   :config
   (cnfonts-enable))
 
-;;;; config sql-mysql ;;;;
-;; problem: 'no sql process started'
-(setq sql-mysql-options '("-C" "-f" "-t" "-n"))
+;; config lsp for python
+(use-package lsp-mode
+  :hook (python-mode . lsp)
+  commands lsp)
+(use-package lsp-pyright
+  :ensure t
+  :config
+  (setq lsp-pyright-typechecking-mode "basic"))
 
 ;; 安装 general 自定义快捷键
 (unless (package-installed-p 'general)
