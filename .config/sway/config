@@ -234,6 +234,9 @@ include /etc/sway/config.d/*
 # 禁用所有窗口的边框
 default_border none
 
+# 禁用挂起
+
+
 # custom hot key
 bindsym $mod+p exec --no-startup-id ~/bin/autoswitch_display.sh
 # 切换 Waybar 的显示与隐藏
@@ -242,14 +245,16 @@ bindsym $mod+m exec killall -SIGUSR1 waybar
 bindsym $mod+Alt+c exec --no-startup-id chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
 bindsym $mod+Alt+f exec --no-startup-id firefox
 bindsym $mod+Alt+i exec --no-startup-id ~/software/idea-IC-243.26053.27/bin/idea
+bindsym $mod+Alt+u exec --no-startup-id ~/software/idea-IU-243.26053.27/bin/idea
+bindsym $mod+Alt+p exec grim -g "$(slurp)" ~/Pictures/$(date +%Y%m%d_%H%M%S).png
 
 ### run flatpak software
 bindsym $mod+Alt+d exec --no-startup-id flatpak run io.dbeaver.DBeaverCommunity
-bindsym $mod+Alt+p exec --no-startup-id flatpak run org.pgadmin.pgadmin4
 
 ### input remapper gtk key
 bindsym $mod+Alt+k exec --no-startup-id ~/.config/sway/input-remapper.sh
 
+exec mako
 exec --no-startup-id variety
 exec --no-startup-id fcitx5
 

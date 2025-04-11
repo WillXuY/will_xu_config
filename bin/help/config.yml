@@ -12,3 +12,7 @@
 - org editor : emacs -nw
 - system snapshots: timeshift
 - media player: vlc
+- system monitor: btop
+- full screen shot: wf-recorder -f output.mp4
+- start a file server: python3 -m http.server 8000 --bind 192.168.0.x
+- view picture: pqiv
