@@ -23,10 +23,12 @@
 
 ;;;; font & size ;;;;
 ;; use cnfonts
-(use-package cnfonts
-  :ensure t
-  :config
-  (cnfonts-enable))
+;; 只在 gui 界面调试字体，其他交给终端
+(when (display-graphic-p)
+  (use-package cnfonts
+    :ensure t
+    :config
+    (cnfonts-enable)))
 
 (setq evil-want-keybinding nil)
 ;; 使用 use-package 安装和配置 evil
