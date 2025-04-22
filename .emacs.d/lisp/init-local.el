@@ -3,6 +3,18 @@
 ;; 这个是为了在 org mode 中用英文显示日期，默认是中文
 ;; (setq system-time-locale "C")
 
+;;;; 在加载完成配置后在修改软件源
+(with-eval-after-load 'init-elpa
+  (require 'package)
+  (setq package-archives
+        '(("gnu"   . "https://mirrors.ustc.edu.cn/elpa/gnu/")
+          ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")))
+  (message "✅ 使用了自定义 ELPA 镜像源."))
+
+;; 自动在 Emacs 空闲 300 秒（5分钟）后启动 zone 模式
+(require 'zone)
+(zone-when-idle 300)
+
 ;;;; theme catppuccin
 (when (maybe-require-package 'catppuccin-theme)
   (setq catppuccin-flavor 'frappe)
