@@ -1,109 +1,93 @@
-;; 本地环境
-(set-locale-environment "en_US.UTF-8")
+;; 本地语言环境设置
+;; (set-locale-environment "en_US.UTF-8")
 ;; 这个是为了在 org mode 中用英文显示日期，默认是中文
-(setq system-time-locale "C")
+;; (setq system-time-locale "C")
 
-;; Download use-package
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+;;;; theme catppuccin
+(when (maybe-require-package 'catppuccin-theme)
+  (setq catppuccin-flavor 'frappe)
+  (catppuccin-reload))
 
-;; theme
-(use-package catppuccin-theme
-  :ensure t)
-(setq catppuccin-flavor 'frappe)
-(catppuccin-reload)
-
-(use-package nyan-mode
-  :ensure t
-  :config
-  (setq nyan-wavy-trail t)
-  (setq nyan-animate-nyancat t)
-  (nyan-mode 1)
-  :commands (nyan-mode))
-
-;;;; font & size ;;;;
-;; use cnfonts
+;;;; font in GUI: use cnfonts
 ;; 只在 gui 界面调试字体，其他交给终端
 (when (display-graphic-p)
-  (use-package cnfonts
-    :ensure t
-    :config
-    (cnfonts-enable)))
+  ;; 设置英文字符字体为 Hack Nerd Font, 字体大小为 13
+  (set-face-attribute 'default nil :font "Hack Nerd Font-13")
+  ;; 设置中文字符字体为 WenQuanYi Micro Hei, 字体大小为 15.5
+  (set-fontset-font t 'han "WenQuanYi Micro Hei Mono-15.5"))
 
-(setq evil-want-keybinding nil)
-;; 使用 use-package 安装和配置 evil
-(use-package evil
-  :ensure t
-  :init
-  :config
-  (setq evil-want-integration t)   ;; 启用基本集成
-  (setq evil-want-keybinding nil)  ;; 禁用自动绑定配合 evil-collection
-  :config
+;;;; UI
+;; modeline
+(when (maybe-require-package 'doom-modeline)
+  ;; (maybe-require-package 'all-the-icons)
+  (require 'doom-modeline)
+  ;; 只要显示文件名
+  (setq doom-modeline-buffer-file-name-style 'name)
+  (setq doom-modeline-icon t)
+  (doom-modeline-mode 1))
+
+(when (maybe-require-package 'nyan-mode)
+  (setq nyan-bar-length 20)  ;; 设置 Nyan Cat 的长度
+  (setq nyan-animate-nyancat t)  ;; 启用动画
+  (setq nyan-wavy-trail t)  ;; 启用波浪尾巴
+  (nyan-mode 1))
+
+;;;; EVIL 配置
+;; 暂时移除 evil collection
+(when (maybe-require-package 'evil)
+  (setq evil-want-integration t)    ;; 启用基本集成
+  (require 'evil)
   (evil-mode 1))
-(use-package evil-collection
-  :after evil                      ;; 确保 evil 先加载
-  :ensure t
-  :config
-  (evil-collection-init))          ;; 初始化默认的 evil 快捷键绑定
 
-;; 文件：init-treemacs.el
-;; 说明：集成 treemacs 文件管理器，用于侧边栏浏览项目文件结构
-(use-package treemacs
-  :ensure t               ;; 如果包未安装，自动从包仓库安装
-  :defer t                ;; 延迟加载（直到调用相关命令）
-  :init
-  :config)
-(use-package treemacs-evil
-  :after (treemacs evil)    ;; 需要在 treemacs 和 evil 加载后加载
-  :ensure t)                ;; 集成 treemacs 和 evil 的快捷键绑定
-(use-package treemacs-projectile
-  :after (treemacs projectile)  ;; 集成 treemacs 与项目管理工具 projectile
-  :ensure t)
+;;;; Treemacs 文件管理器, 不使用 require 就不会立即加载
+(when (maybe-require-package 'treemacs)
+  (maybe-require-package 'treemacs-evil)
+  (require 'treemacs-evil))
+;; 美化 treemacs
+;; (maybe-require-package 'treemacs-nerd-icons)
+;; (require 'treemacs-nerd-icons)
+;; (treemacs-load-theme 'nerd-icons)
+;; (maybe-require-package 'treemacs-projectile)
 
-;; 安装 general 自定义快捷键
-(unless (package-installed-p 'general)
-  (package-refresh-contents)
-  (package-install 'general))
-(require 'general)
-;; 自定义 general
-(general-create-definer my-space-leader-def
-                        ;; insert mode
-                        :states '(normal visual motion emacs)
-                        ;; 定义 Space 为 Leader 键
-                        :prefix "SPC"
-                        ;; 防止被覆盖
-                        :keymaps 'override)
-(my-space-leader-def
-  "b" '(:ignore t :which-key "buffers")
-  "b b" 'switch-to-buffer
-  "b e" 'eval-buffer
-  "b k" 'kill-this-buffer
-  "b n" 'next-buffer
-  "b p" 'previous-buffer
+;;;; 安装 general 自定义快捷键
+(when (maybe-require-package 'general)
+  (require 'general)
+  (general-create-definer my-space-leader-def
+    :states '(normal visual motion emacs) ;; insert mode
+    :prefix "SPC"                         ;; 定义 Space 为 Leader 键
+    :keymaps 'override)                   ;; 防止被覆盖
 
-  "f" '(:ignore t :which-key "files")
-  "f f" 'find-file
-  "f s" 'save-buffer
-  "f r" 'recentf-open
+  (my-space-leader-def
+    "b" '(:ignore t :which-key "buffers")
+    "b b" 'switch-to-buffer
+    "b e" 'eval-buffer
+    "b k" 'kill-this-buffer
+    "b n" 'next-buffer
+    "b p" 'previous-buffer
 
-  "g" '(:ignore t :which-key "git")
-  "g s" 'magit-status
-  "g l" '(magit-log-current :which-key "log current")
+    "f" '(:ignore t :which-key "files")
+    "f f" 'find-file
+    "f s" 'save-buffer
+    "f r" 'recentf-open
 
-  "o" '(:ignore t :which-key "org-mode")
-  "o h" 'org-insert-heading
+    "g" '(:ignore t :which-key "git")
+    "g s" 'magit-status
+    "g l" '(magit-log-current :which-key "log current")
 
-  "p" '(:ignore t :which-key "projectile")
-  "p p" 'projectile-switch-project
-  "p f" 'projectile-find-file
+    "o" '(:ignore t :which-key "org-mode")
+    "o h" 'org-insert-heading
 
-  "t" '(:ignore t :which-key "treemacs")
-  "t t" 'treemacs
+    "p" '(:ignore t :which-key "projectile")
+    "p p" 'projectile-switch-project
+    "p f" 'projectile-find-file
 
-  "x" '(:ignore t :which-key "run")
-  "x x" 'execute-extended-command)
+    "t" '(:ignore t :which-key "treemacs")
+    "t t" 'treemacs
 
-;; 配置 org 中的 text 内容可以被 python3 读取
+    "x" '(:ignore t :which-key "run")
+    "x x" 'execute-extended-command))
+
+;;;; org-babel 扩展 text 内容可以被 python3 读取
 (defun org-babel-execute:text (body params) body)
 ;; text 运行时不需要再询问
 (setq org-confirm-babel-evaluate
@@ -111,34 +95,45 @@
         (not (member lang '("text")))))
 ;; 支持 python3 的运行
 (setq org-babel-python-command "python3")
+;; 保持编辑src时在同一个窗口，减少焦点问题
+(setq org-src-window-setup 'current-window)
 
-;;;; Python + Flask 配置
-;; LSP 配置
-(use-package lsp-mode
-  :ensure t
-  :hook ((python-mode . lsp))
-  :commands lsp)
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
+;;;; LSP with corfu
+;; 停止自动配置补全
+(setq lsp-completion-provider :none)
 
-;; pyvenv 配置
-(use-package pyvenv
-  :ensure t
-  :config
-  (pyvenv-mode 1))
+;;;; Lsp mode for python
+(when (maybe-require-package 'lsp-mode)
+  (add-hook 'python-mode-hook #'lsp-deferred))
 
-;; Flask 项目运行命令
-(defun my/python-flask-run ()
-  "Run current Flask app"
-  (interactive)
-  (let ((default-directory (project-root (project-current t))))
-    (compile "FLASK_APP=app.py FLASK_ENV=development flask run")))
-;; debug for python
-(use-package dap-mode
-  :ensure t
-  :config
-  (require 'dap-python))
+;;;; Lsp for Java
+(defun my/java-workspace-dir ()
+  "使用 Projectile 动态设置工作区路径."
+  (let ((project-root (projectile-project-root)))
+    (if project-root
+        ;; 尝试自动创建 .lsp-workspace 工作目录
+        (expand-file-name (concat ".lsp-workspace/"
+				  (file-name-nondirectory project-root))
+			  project-root)
+      (error "未找到 Java 项目的根目录"))))
+
+(when (maybe-require-package 'lsp-java)
+  ;; jdk 和 jdtls 的路径
+  (setq lsp-java-java-path "~/software/jdk-21.0.7+6/bin/java")
+  (setq lsp-java-server-install-dir "~/software/jdtls-1.46.1/")
+  ;; 动态设置工作区路径
+  (setq lsp-java-workspace-dir-function #'my/java-workspace-dir)
+
+  (with-eval-after-load 'lsp-java
+			;; 启用 import 的自动整理
+			(setq lsp-java-save-action-organize-imports t)
+			;; 禁用 Gradle（你使用的是 Maven）
+			(setq lsp-java-import-gradle-enabled nil)
+			(setq lsp-java-import-maven-enabled t))
+			;; 自动构建项目
+			;; (setq lsp-java-autobuild-enabled t)
+
+  (add-hook 'java-mode-hook #'lsp-deferred))
 
 ;; Purcell Code
 (provide 'init-local)
