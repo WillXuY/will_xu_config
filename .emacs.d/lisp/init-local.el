@@ -17,6 +17,7 @@
 
 ;;;; theme catppuccin
 (when (maybe-require-package 'catppuccin-theme)
+  (load-theme 'catppuccin :no-confirm)
   (setq catppuccin-flavor 'frappe)
   (catppuccin-reload))
 
