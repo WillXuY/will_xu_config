@@ -242,17 +242,18 @@ bindsym $mod+p exec --no-startup-id ~/bin/autoswitch_display.sh
 # 切换 Waybar 的显示与隐藏
 bindsym $mod+m exec killall -SIGUSR1 waybar
 
-bindsym $mod+Alt+c exec --no-startup-id chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
+# 原生软件功能
 bindsym $mod+Alt+f exec --no-startup-id firefox
-bindsym $mod+Alt+i exec --no-startup-id ~/software/idea-IC-243.26053.27/bin/idea
-bindsym $mod+Alt+u exec --no-startup-id ~/software/idea-IU-243.26053.27/bin/idea
+
+### 自定义功能组合
+# 截图功能
 bindsym $mod+Alt+p exec grim -g "$(slurp)" ~/Pictures/$(date +%Y%m%d_%H%M%S).png
-
-### run flatpak software
-bindsym $mod+Alt+d exec --no-startup-id flatpak run io.dbeaver.DBeaverCommunity
-
 ### input remapper gtk key
 bindsym $mod+Alt+k exec --no-startup-id ~/.config/sway/input-remapper.sh
+
+### run flatpak software
+bindsym $mod+Alt+c exec --no-startup-id flatpak run com.google.Chrome
+bindsym $mod+Alt+d exec --no-startup-id flatpak run io.dbeaver.DBeaverCommunity
 
 exec mako
 exec --no-startup-id variety
