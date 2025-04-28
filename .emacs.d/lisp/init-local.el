@@ -153,6 +153,10 @@ Returns BODY unchanged as the result."
 
 ;;;; eglot(LSP) with corfu
 (require 'eglot)
+;; 配置 pylsp 给 eglot
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("pylsp"))))
 ;; Lsp mode for python
 (add-hook 'python-mode-hook #'eglot-ensure)
 ;; Lsp for Java
@@ -171,15 +175,20 @@ Returns BODY unchanged as the result."
 (with-eval-after-load 'eglot
   ;; 动态设置工作区路径
   (setq eglot-java-workspace-dir-function #'my/java-workspace-dir)
+  ;; 添加 jdtls 而不是替代服务器
+  (add-to-list 'eglot-server-programs
+               '(java-mode . ("jdtls")))
   ;; jdk 和 jdtls 的路径
-  (setq eglot-server-programs '((java-mode . ("jdtls")))
-        eglot-java-java-path "~/software/jdk-21.0.7+6/bin/java"
+  (setq eglot-java-java-path "~/software/jdk-21.0.7+6/bin/java"
         eglot-java-server-install-dir "~/software/jdtls-1.46.1/")
   ;; 启用 import 的自动整理
   ;; (setq lsp-java-save-action-organize-imports t)
   ;; 禁用 Gradle（使用的是 Maven）
   (setq eglot-java-import-gradle-enabled nil
         eglot-java-import-maven-enabled t))
+
+;; todo 配置顶部作快捷栏
+
 ;;;; End eglot(LSP) with corfu
 
 ;; Purcell Code
