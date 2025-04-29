@@ -59,7 +59,11 @@ fi
 
 # 添加自定义配置部分
 # ---------------------------
-# export PATH="$HOME/bin:$PATH"
+# 添加 jdk
+export JAVA_HOME=~/software/jdk-21.0.7+6
+export PATH=$JAVA_HOME/bin:$PATH
+export JDTLS_HOME=~/software/jdtls-1.46.1
+export PATH=$JDTLS_HOME/bin:$PATH
 
 # 添加 fcitx5 环境变量
 export GTK_IM_MODULE=fcitx

@@ -48,6 +48,9 @@
     "b n" 'next-buffer
     "b p" 'previous-buffer
 
+    "e" '(:ignore t :which-key "eglot")
+    "c a" 'eglot-code-actions
+
     "f" '(:ignore t :which-key "files")
     "f f" 'find-file
     "f s" 'save-buffer
@@ -153,14 +156,18 @@ Returns BODY unchanged as the result."
 
 ;;;; eglot(LSP) with corfu
 (require 'eglot)
+
+;; 通用 hook
+(dolist (hook '(python-mode-hook
+                java-mode-hook))
+  (add-hook hook #'eglot-ensure))
+
 ;; 配置 pylsp 给 eglot
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pylsp"))))
-;; Lsp mode for python
-(add-hook 'python-mode-hook #'eglot-ensure)
-;; Lsp for Java
-(add-hook 'java-mode-hook 'eglot-ensure)
+
+;; eglot jdtls for Java
 ;; 自定义 java 工作目录
 (defun my/java-workspace-dir ()
   "使用 Projectile 动态设置工作区路径."
@@ -172,15 +179,13 @@ Returns BODY unchanged as the result."
 		 (file-name-nondirectory project-root))
 	 project-root)
       (error "未找到 Java 项目的根目录"))))
+
 (with-eval-after-load 'eglot
   ;; 动态设置工作区路径
   (setq eglot-java-workspace-dir-function #'my/java-workspace-dir)
-  ;; 添加 jdtls 而不是替代服务器
-  (add-to-list 'eglot-server-programs
-               '(java-mode . ("jdtls")))
-  ;; jdk 和 jdtls 的路径
-  (setq eglot-java-java-path "~/software/jdk-21.0.7+6/bin/java"
-        eglot-java-server-install-dir "~/software/jdtls-1.46.1/")
+  ;; 配置 jdtls 服务的启动命令
+  (add-to-list 'eglot-server-programs '(java-mode . ("jdtls")))
+  ;; jdtls 相关选项
   ;; 启用 import 的自动整理
   ;; (setq lsp-java-save-action-organize-imports t)
   ;; 禁用 Gradle（使用的是 Maven）
@@ -190,6 +195,28 @@ Returns BODY unchanged as the result."
 ;; todo 配置顶部作快捷栏
 
 ;;;; End eglot(LSP) with corfu
+
+;;;; AI coding
+;; gptel
+(maybe-require-package 'gptel)
+(with-eval-after-load 'gptel
+  ;; 定义多个 Ollama 后端
+  (gptel-make-ollama "qwen2.5-ollama-podman"
+    :host "127.0.0.1:11434"
+    :stream t
+    :models '("qwen2.5-coder:7b"))
+  (gptel-make-ollama "deepseek-coder-ollama-podman"
+    :host "127.0.0.1:11434"
+    :stream t
+    :models '("deepseek-coder:6.7b"))
+  (gptel-make-ollama "codellama-ollama-podman"
+    :host "127.0.0.1:11434"
+    :stream t
+    :models '("codellama:7b"))
+
+  ;; 设置默认后端
+  (setq gptel-backend (gptel-get-backend "qwen2.5-ollama-podman")))
+;;;; End AI coding
 
 ;; Purcell Code
 (provide 'init-local)
