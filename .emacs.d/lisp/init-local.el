@@ -49,7 +49,7 @@
     "b p" 'previous-buffer
 
     "e" '(:ignore t :which-key "eglot")
-    "c a" 'eglot-code-actions
+    "e a" 'eglot-code-actions
 
     "f" '(:ignore t :which-key "files")
     "f f" 'find-file
