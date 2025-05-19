@@ -37,9 +37,9 @@
 (when (maybe-require-package 'general)
   (require 'general)
   (general-create-definer my-space-leader-def
-    :states '(normal visual motion emacs)  ;; insert mode
-    :prefix "SPC"                          ;; 定义 Space 为 Leader 键
-    :keymaps 'override)                    ;; 防止被覆盖
+    :states '(normal visual motion emacs) ;; insert mode
+    :prefix "SPC"                         ;; 定义 Space 为 Leader 键
+    :keymaps 'override)                   ;; 防止被覆盖
   (my-space-leader-def
     "b" '(:ignore t :which-key "buffers")
     "b b" 'switch-to-buffer
@@ -66,6 +66,7 @@
     "p" '(:ignore t :which-key "projectile")
     "p p" 'projectile-switch-project
     "p f" 'projectile-find-file
+    "p g" 'projectile-ripgrep
 
     "t" '(:ignore t :which-key "treemacs")
     "t t" 'treemacs
@@ -102,9 +103,10 @@
         nyan-wavy-trail t)      ;; 启用波浪尾巴
   (nyan-mode 1))
 
-;; 自动在 Emacs 空闲 300 秒（5分钟）后启动 zone 模式
 (require 'zone)
 (zone-when-idle 300)
+
+(maybe-require-package 'ripgrep)
 
 ;; Treemacs 文件管理器, 不使用 require 就不会立即加载
 (when (require-package 'treemacs)
@@ -120,10 +122,24 @@
                 (setq-local truncate-lines t
                             ;; （可选）在侧边窄窗口也截断
                             truncate-partial-width-windows t)))
-    (text-scale-set 0)  ;; 字体缩放
+    (text-scale-set 0) ;; 字体缩放
     (text-scale-decrease 1))
   (when (maybe-require-package 'treemacs-evil)
     (require 'treemacs-evil)))
+
+;; 确保在 theme 和 evil-mode 后再调整光标
+(with-eval-after-load 'evil
+  (with-eval-after-load 'catppuccin-theme
+    ;; 1. 全局方块光标
+    (setq-default cursor-type 'box)
+    ;; 2. 统一所有 Evil 状态的光标为白色方块
+    (setq evil-normal-state-cursor   '(box   "white")
+          evil-insert-state-cursor   '(bar   "white")
+          evil-visual-state-cursor   '(box   "green")
+          evil-replace-state-cursor  '(box   "red")
+          evil-operator-state-cursor '(box   "white"))
+    ;; 3. 直接设置光标脸谱，防止其它插件覆盖
+    (set-face-attribute 'cursor nil :background "white")))
 ;;;; End UI 外观系列
 
 ;;;; Org mode config

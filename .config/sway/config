@@ -242,6 +242,11 @@ bindsym $mod+p exec --no-startup-id ~/bin/autoswitch_display.sh
 # 切换 Waybar 的显示与隐藏
 bindsym $mod+m exec killall -SIGUSR1 waybar
 
+# 声音相关功能：
+# 在 Sway 启动时自动启动 PipeWire 及会话管理器
+exec_always --no-startup-id \
+    systemctl --user start pipewire.service pipewire-pulse.service wireplumber.service
+
 # 原生软件功能
 bindsym $mod+Alt+f exec --no-startup-id firefox
 
