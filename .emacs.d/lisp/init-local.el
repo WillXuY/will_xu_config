@@ -30,8 +30,15 @@
 ;;;; 快捷键相关
 ;; EVIL 配置
 (when (maybe-require-package 'evil)
+  ;; 关闭这个参数才能使用 evil collection
+  (setq evil-want-keybinding nil)
+  (setq evil-want-integration t)
   (require 'evil)
   (evil-mode 1))
+
+(when (maybe-require-package 'evil-collection)
+  (require 'evil-collection)
+  (evil-collection-init))
 
 ;; general 自定义快捷键
 (when (maybe-require-package 'general)
@@ -44,6 +51,7 @@
     "b" '(:ignore t :which-key "buffers")
     "b b" 'switch-to-buffer
     "b e" 'eval-buffer
+    "b i" 'ibuffer
     "b k" 'kill-this-buffer
     "b n" 'next-buffer
     "b p" 'previous-buffer
@@ -103,9 +111,6 @@
         nyan-wavy-trail t)      ;; 启用波浪尾巴
   (nyan-mode 1))
 
-(require 'zone)
-(zone-when-idle 300)
-
 (maybe-require-package 'ripgrep)
 
 ;; Treemacs 文件管理器, 不使用 require 就不会立即加载
@@ -137,6 +142,7 @@
           evil-insert-state-cursor   '(bar   "white")
           evil-visual-state-cursor   '(box   "green")
           evil-replace-state-cursor  '(box   "red")
+          evil-emacs-state-cursor    '(box   "white")
           evil-operator-state-cursor '(box   "white"))
     ;; 3. 直接设置光标脸谱，防止其它插件覆盖
     (set-face-attribute 'cursor nil :background "white")))
@@ -173,15 +179,34 @@ Returns BODY unchanged as the result."
 ;;;; eglot(LSP) with corfu
 (require 'eglot)
 
-;; 通用 hook
-(dolist (hook '(python-mode-hook
-                java-mode-hook))
-  (add-hook hook #'eglot-ensure))
+(defun my-eglot-use-project-pylsp ()
+  "自动为当前 Python 项目配置基于项目名的虚拟环境和 pylsp."
+  (when (derived-mode-p 'python-mode)
+    (let* ((project-root (or (vc-root-dir) default-directory))
+           (project-name (file-name-nondirectory (directory-file-name project-root)))
+           (venv-path (expand-file-name project-name "~/.virtualenvs/"))
+           (pylsp-path (expand-file-name "bin/pylsp" venv-path)))
+      (when (file-executable-p pylsp-path)
+        ;; 设置局部 process-environment，影响 eglot 启动时的环境
+        (setq-local process-environment
+                    (cons (format "VIRTUAL_ENV=%s" venv-path)
+                          (cons (format "PATH=%s:%s"
+                                        (expand-file-name "bin" venv-path)
+                                        (getenv "PATH"))
+                                process-environment)))
 
-;; 配置 pylsp 给 eglot
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("pylsp"))))
+        ;; 设置 eglot-server-programs 为局部变量
+        (setq-local eglot-server-programs `((python-mode . (,pylsp-path))))
+
+        (message "🐍 使用虚拟环境 %s 中的 pylsp" project-name)))))
+
+;; Hook 先设置环境和 eglot-server-programs
+(add-hook 'python-mode-hook #'my-eglot-use-project-pylsp)
+;; 再启动 eglot
+(add-hook 'python-mode-hook #'eglot-ensure)
+
+;; 其它语言通用 hook（如 Java）
+(add-hook 'java-mode-hook #'eglot-ensure)
 
 ;; eglot jdtls for Java
 ;; 自定义 java 工作目录
