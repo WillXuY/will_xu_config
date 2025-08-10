@@ -260,7 +260,10 @@ bindsym $mod+Alt+k exec --no-startup-id ~/.config/sway/input-remapper.sh
 bindsym $mod+Alt+c exec --no-startup-id flatpak run com.google.Chrome
 bindsym $mod+Alt+d exec --no-startup-id flatpak run io.dbeaver.DBeaverCommunity
 
+### 壁纸相关功能
+exec_always --no-startup-id "$HOME/wallpaper/wallpaper-slideshow.sh"
+
+### 自动启动
 exec mako
-exec --no-startup-id variety
 exec --no-startup-id fcitx5
 
