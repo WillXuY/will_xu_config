@@ -1,0 +1,33 @@
+* 声音问题排查与修复记录 — Debian 13 on Asus ROG
+
+** 一、问题描述
+- 升级至 Debian 13，Kernel 6.12.38 后扬声器无声音。
+- =pavucontrol= 中有声浪反馈，声卡被识别；问题出在扬声器输出路径。
+
+** 二、排查步骤
+1. 使用 ~dmesg | grep -i audio~ 和 ~journalctl -b | grep codec~ 查看硬件识别情况，确认 ALC294 codec 被识别但 speaker_outs=0。
+2. 尝试常见方案：
+   - BIOS Fast Boot 切换；
+   - 安装 =sof-firmware= 及相关配置；
+   - 内核降级测试；
+   - 黑名单干扰模块（如 =snd_soc_avs= ）；
+   - 添加 ~model=asus-zenbook~ 等 modprobe 参数（最终有效）。
+3. 成功修复方法：
+   #+BEGIN_SRC bash
+   sudo vi /etc/modprobe.d/alsa-base.conf
+   # 添加：
+   options snd-hda-intel model=asus-zenbook
+
+   sudo update-initramfs -u
+   sudo reboot
+   #+END_SRC
+4. 验证修复：检查 pavucontrol、alsamixer 和 kernel 日志。
+
+** 三、参考案例
+- AskUbuntu: 使用 ~model=asus-zenbook~ 参数恢复扬声器输出。
+- Arch Linux 讨论: 类似机型通过此参数改善声音问题。
+- 内核补丁参考（ALC294 固件）：Bugzilla 与 Launchpad。
+
+** 四、建议
+- 若未来 Kernel 修复或固件更新后不再必要，可考虑移除此参数；
+- 可监控 kernel 发布说明或 bug fix，评价是否要移除或保留该设置。
