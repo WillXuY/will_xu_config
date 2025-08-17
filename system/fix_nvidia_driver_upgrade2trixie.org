@@ -1,0 +1,62 @@
+* Debian 下修复 NVIDIA 驱动 DKMS 模块缺失问题
+:PROPERTIES:
+:Author: Will
+:Date:  [2025-08-17 Sun]
+:OS: Debian 13 (trixie/sid)
+:Kernel: 6.12.41+deb13-amd64
+:Driver: nvidia-driver 550.163.01
+:END:
+
+** 问题描述
+在升级到内核 6.12.41+deb13 后，运行 =nvidia-smi= 报错：
+#+BEGIN_SRC text
+NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver.
+#+END_SRC
+
+使用 =modprobe nvidia= 也提示找不到模块：
+#+BEGIN_SRC text
+modprobe: FATAL: Module nvidia-current not found in directory /lib/modules/6.12.41+deb13-amd64
+#+END_SRC
+
+** 问题原因
+- 新内核版本已安装 (=linux-image-6.12.41+deb13=)，但对应的 =linux-headers= 包未安装。
+- 没有 headers，DKMS 无法为新内核编译 =nvidia.ko=。
+- 导致 NVIDIA 驱动在 6.12.41 内核下缺失。
+
+** 解决步骤
+1. 确认 DKMS 状态
+   #+BEGIN_SRC bash
+   sudo dkms status
+   #+END_SRC
+   输出仅包含旧内核 (6.12.38)，说明新内核没有编译模块。
+
+2. 安装对应内核的 headers
+   #+BEGIN_SRC bash
+   sudo apt update
+   sudo apt install linux-headers-$(uname -r)
+   #+END_SRC
+
+3. 验证 headers 安装成功
+   #+BEGIN_SRC bash
+   ls -ld /lib/modules/$(uname -r)/build
+   #+END_SRC
+   应该指向 =/usr/src/linux-headers-6.12.41+deb13-amd64=。
+
+4. 重新构建 DKMS 模块
+   #+BEGIN_SRC bash
+   sudo dkms autoinstall -k $(uname -r)
+   #+END_SRC
+
+5. 验证 NVIDIA 驱动是否加载
+   #+BEGIN_SRC bash
+   lsmod | grep nvidia
+   nvidia-smi
+   #+END_SRC
+
+** 总结
+- 每次内核升级后，需要确保同时安装对应的 =linux-headers= 包。
+- 没有 headers，DKMS 无法自动编译 NVIDIA 模块。
+- 遇到此类问题，可以按照以下顺序排查：
+  1. 确认 DKMS 状态 (=dkms status=)
+  2. 检查 headers 是否存在 (=ls /usr/src/linux-headers-$(uname -r)=)
+  3. 手动触发 DKMS 重编译 (=dkms autoinstall=)
