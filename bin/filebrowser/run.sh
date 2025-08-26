@@ -14,8 +14,7 @@ podman run -d \
     --name "$CONTAINER_NAME" \
     -p "$HOST_PORT":80 \
     -v "$DATA_DIR":/srv \
-    filebrowser/filebrowser \
-    --noauth
+    docker.io/filebrowser/filebrowser:v2-s6
 
 echo "Filebrowser is running. Visit http://localhost:$HOST_PORT"
 
