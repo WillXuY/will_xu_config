@@ -12,9 +12,10 @@ echo "Starting new filebrowser container..."
 podman run -d \
     --replace \
     --name "$CONTAINER_NAME" \
-    -p "$HOST_PORT":80 \
+    -e FB_PORT=8080 \
+    -p "$HOST_PORT":8080 \
     -v "$DATA_DIR":/srv \
-    docker.io/filebrowser/filebrowser:v2-s6
+    docker.io/filebrowser/filebrowser
 
 echo "Filebrowser is running. Visit http://localhost:$HOST_PORT"
 
