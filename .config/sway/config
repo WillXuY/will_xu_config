@@ -231,6 +231,10 @@ bar {
 include /etc/sway/config.d/*
 
 ### custom config
+
+# 刷新率修改
+output eDP-1 mode 1920x1080@60Hz
+
 # 禁用所有窗口的边框
 default_border none
 
